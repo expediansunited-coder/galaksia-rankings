@@ -1,0 +1,7 @@
+pandas
+Pillow
+requests
+selenium
+webdriver-manager
+google-auth
+google-api-python-client
