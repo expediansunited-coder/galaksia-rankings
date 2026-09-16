@@ -1,0 +1,129 @@
+name: Rankings 11-a-side
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Prague 08:00 Wednesday:
+    # - 06:00 UTC during summer time
+    # - 07:00 UTC during winter time
+    - cron: "0 6 * * 3"
+    - cron: "0 7 * * 3"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rankings-11aside
+  cancel-in-progress: false
+
+jobs:
+  rankings:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Prague DST schedule
+        id: prague_time
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual run. Running job."
+            echo "run_job=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CURRENT_CRON="${{ github.event.schedule }}"
+          PRAGUE_OFFSET=$(TZ="Europe/Prague" date +"%z")
+
+          echo "Triggered cron: $CURRENT_CRON"
+          echo "Current Prague UTC offset: $PRAGUE_OFFSET"
+
+          if [ "$PRAGUE_OFFSET" = "+0200" ]; then
+            EXPECTED_CRON="0 6 * * 3"
+          elif [ "$PRAGUE_OFFSET" = "+0100" ]; then
+            EXPECTED_CRON="0 7 * * 3"
+          else
+            echo "Unknown Prague offset: $PRAGUE_OFFSET"
+            echo "run_job=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Expected cron for current Prague offset: $EXPECTED_CRON"
+
+          if [ "$CURRENT_CRON" = "$EXPECTED_CRON" ]; then
+            echo "Correct seasonal cron. Running job, even if GitHub started late."
+            echo "run_job=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Wrong seasonal cron. Skipping duplicate run."
+            echo "run_job=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repo
+        if: steps.prague_time.outputs.run_job == 'true'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        if: steps.prague_time.outputs.run_job == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        if: steps.prague_time.outputs.run_job == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Write credentials/config files
+        if: steps.prague_time.outputs.run_job == 'true'
+        shell: bash
+        run: |
+          echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
+          echo '${{ secrets.META_CONFIG_JSON }}' > meta_config.json
+
+      - name: Generate ranking images
+        if: steps.prague_time.outputs.run_job == 'true'
+        run: |
+          python "rankings.py" --generate-only
+
+      - name: Commit generated ranking images
+        if: steps.prague_time.outputs.run_job == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add output/rankings
+
+          if git diff --cached --quiet; then
+            echo "No generated ranking changes to commit."
+          else
+            git commit -m "Generate 11-a-side ranking images"
+            git push
+          fi
+
+      - name: Wait for GitHub raw files
+        if: steps.prague_time.outputs.run_job == 'true'
+        run: sleep 20
+
+      - name: Post rankings to Meta
+        if: steps.prague_time.outputs.run_job == 'true'
+        run: |
+          python "rankings.py" --post-only
+
+      - name: Commit cleanup after posting
+        if: steps.prague_time.outputs.run_job == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add output/rankings
+
+          if git diff --cached --quiet; then
+            echo "No cleanup changes to commit."
+          else
+            git commit -m "Clean up posted 11-a-side ranking images"
+            git push
+          fi
