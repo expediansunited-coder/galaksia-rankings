@@ -38,9 +38,9 @@ jobs:
           echo "Current Prague UTC offset: $PRAGUE_OFFSET"
 
           if [ "$PRAGUE_OFFSET" = "+0200" ]; then
-            EXPECTED_CRON="0 6 * * 3"
+            EXPECTED_CRON="17 6 * * 3"
           elif [ "$PRAGUE_OFFSET" = "+0100" ]; then
-            EXPECTED_CRON="0 7 * * 3"
+            EXPECTED_CRON="17 7 * * 3"
           else
             echo "Unknown Prague offset: $PRAGUE_OFFSET"
             echo "run_job=false" >> "$GITHUB_OUTPUT"
