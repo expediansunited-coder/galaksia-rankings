@@ -137,6 +137,24 @@ chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 # ============================================================
 # GENERIC HELPERS
 # ============================================================
+def get_background_path_for_ranking(cfg, team_count):
+    """
+    Uses team-specific background if available:
+      background 11A.png
+      background 11B.png
+
+    Falls back to old count-based background:
+      background {count}.png
+    """
+    team = str(cfg.get("team", "")).strip().lower()
+
+    team_bg_path = os.path.join(SCRIPT_DIR, f"background {team}.png")
+
+    if team in ("11a", "11b") and os.path.exists(team_bg_path):
+        return team_bg_path
+
+    return BACKGROUND_TEMPLATE_PATTERN.format(count=team_count)
+
 def clean_text(text):
     if not text:
         return ""
@@ -368,7 +386,7 @@ def sync_backgrounds_from_drive(drive):
         name = f["name"]
         stem, ext = os.path.splitext(name)
 
-        if not re.match(r"^background\s+\d+$", stem.strip(), re.I):
+        if not re.match(r"^background\s+(\d+|11a|11b)$", stem.strip(), re.I):
             continue
 
         if ext.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
@@ -681,7 +699,7 @@ def scrape_pibfal_ranking_table(driver, cfg):
 # ============================================================
 def draw_ranking_image(df, cfg, league_logo=None):
     team_count = min(len(df), MAX_ROWS)
-    background_path = BACKGROUND_TEMPLATE_PATTERN.format(count=team_count)
+    background_path = get_background_path_for_ranking(cfg, team_count)
 
     if not os.path.exists(background_path):
         raise RuntimeError(f"Background template not found: {background_path}")
