@@ -50,6 +50,9 @@ GITHUB_REPO_RAW_BASE = (
     "expediansunited-coder/galaksia-rankings/main/"
 )
 
+SNAPSHOT_DIR = os.path.join(SCRIPT_DIR, "data")
+RANKING_SNAPSHOT_FILE = os.path.join(SNAPSHOT_DIR, "ranking_snapshot_11aside.json")
+
 MANIFEST_FILE = os.path.join(OUTPUT_DIR, "ranking_groups_11aside.json")
 
 RANKING_CONFIGS = [
@@ -138,6 +141,80 @@ chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 # ============================================================
 # GENERIC HELPERS
 # ============================================================
+def wait_for_url(url, retries=8, delay=5):
+    for attempt in range(retries):
+        try:
+            r = requests.get(url, timeout=20)
+
+            if r.status_code == 200:
+                return True
+
+            print(f"    [url-wait] {url} returned {r.status_code}, retrying...")
+
+        except Exception as e:
+            print(f"    [url-wait] {url} failed: {e}")
+
+        time.sleep(delay)
+
+    return False
+
+def load_ranking_snapshot():
+    if not os.path.exists(RANKING_SNAPSHOT_FILE):
+        return {}
+
+    try:
+        with open(RANKING_SNAPSHOT_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"  Warning: could not load ranking snapshot: {e}")
+        return {}
+
+
+def save_ranking_snapshot(snapshot):
+    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+
+    with open(RANKING_SNAPSHOT_FILE, "w", encoding="utf-8") as f:
+        json.dump(snapshot, f, ensure_ascii=False, indent=2)
+
+
+def normalize_ranking_df_for_snapshot(df):
+    if df is None or df.empty:
+        return []
+
+    columns = [
+        "Position",
+        "Team",
+        "Matches Played",
+        "Wins",
+        "Draws",
+        "Losses",
+        "Score",
+        "Diff",
+        "Points",
+    ]
+
+    rows = []
+
+    for _, row in df.iterrows():
+        item = {}
+
+        for col in columns:
+            value = row.get(col, "")
+
+            if pd.isna(value):
+                value = ""
+
+            item[col] = str(value).strip()
+
+        rows.append(item)
+
+    return rows
+
+
+def ranking_group_changed(previous_snapshot, team, new_rows):
+    old_rows = previous_snapshot.get(team, {}).get("rows", [])
+    return old_rows != new_rows
+
 def ordinal(n):
     try:
         n = int(n)
@@ -290,22 +367,17 @@ def build_rankings_caption(items):
     )
 
 def get_background_path_for_ranking(cfg, team_count):
-    """
-    Uses team-specific background if available:
-      background 11A.png
-      background 11B.png
-
-    Falls back to old count-based background:
-      background {count}.png
-    """
     team = str(cfg.get("team", "")).strip().lower()
 
     team_bg_path = os.path.join(SCRIPT_DIR, f"background {team}.png")
 
     if team in ("11a", "11b") and os.path.exists(team_bg_path):
+        print(f"  Using team-specific background for {cfg.get('team')}: {team_bg_path}")
         return team_bg_path
 
-    return BACKGROUND_TEMPLATE_PATTERN.format(count=team_count)
+    fallback = BACKGROUND_TEMPLATE_PATTERN.format(count=team_count)
+    print(f"  Using fallback background for {cfg.get('team')}: {fallback}")
+    return fallback
 
 def clean_text(text):
     if not text:
@@ -550,19 +622,32 @@ def sync_backgrounds_from_drive(drive):
         name = f["name"]
         stem, ext = os.path.splitext(name)
 
-        if not re.match(r"^background\s+(\d+|11a|11b)$", stem.strip(), re.I):
+        # If there is no extension, use the full file name as the stem.
+        # This allows Drive files named exactly:
+        #   background 11A
+        #   background 11B
+        raw_stem = stem if ext else name
+        clean_stem = raw_stem.strip()
+
+        if not re.match(r"^background\s+(\d+|11a|11b)$", clean_stem, re.I):
             continue
 
-        if ext.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+        # If there is an extension, only accept image extensions.
+        # If no extension, still try to open it as an image.
+        if ext and ext.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
             continue
 
-        local_path = os.path.join(SCRIPT_DIR, stem.strip().lower() + ".png")
+        local_path = os.path.join(SCRIPT_DIR, clean_stem.lower() + ".png")
 
-        raw = download_file_bytes(drive, f["id"])
-        img = Image.open(io.BytesIO(raw)).convert("RGBA")
-        img.save(local_path, "PNG")
+        try:
+            raw = download_file_bytes(drive, f["id"])
+            img = Image.open(io.BytesIO(raw)).convert("RGBA")
+            img.save(local_path, "PNG")
 
-        print(f"  Synced background: {name} -> {local_path}")
+            print(f"  Synced background: {name} -> {local_path}")
+
+        except Exception as e:
+            print(f"  Warning: could not sync background {name}: {e}")
 
 
 def find_league_logo_file(logo_files, logo_label):
@@ -1267,6 +1352,9 @@ def run_ranking_image_generator():
     )
 
     try:
+        previous_snapshot = load_ranking_snapshot()
+        new_snapshot = dict(previous_snapshot)
+    
         generated = []
 
         for cfg in RANKING_CONFIGS:
@@ -1287,10 +1375,18 @@ def run_ranking_image_generator():
                 continue
 
             # If Galaksia team has no matches yet, skip this ranking.
+            # Existing logic kept.
             if not galaksia_has_played(df):
                 print(f"  Galaksia has no matches played yet for {cfg['team']} - skipping ranking.")
                 continue
-
+            
+            # Compare current full group table with last saved snapshot.
+            new_rows = normalize_ranking_df_for_snapshot(df)
+            
+            if not ranking_group_changed(previous_snapshot, cfg["team"], new_rows):
+                print(f"  No ranking changes for {cfg['team']} since last run - skipping ranking.")
+                continue
+            
             league_logo = load_league_logo(drive, logo_files, cfg["league_logo_label"])
 
             img = draw_ranking_image(df, cfg, league_logo=league_logo)
@@ -1310,8 +1406,15 @@ def run_ranking_image_generator():
                 "story_path": story_path,
             })
 
+            new_snapshot[cfg["team"]] = {
+                "rows": new_rows,
+                "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+
             print(f"  ✓ Saved: {out_path}")
             print(f"  ✓ Saved story: {story_path}")
+
+        save_ranking_snapshot(new_snapshot)
 
         by_team = {g["team"]: g for g in generated}
         ordered = [by_team[t] for t in POST_ORDER if t in by_team]
@@ -1357,6 +1460,9 @@ def post_rankings_from_manifest():
         print(f"  - {item['team']}")
 
     carousel_urls = [github_raw_url(item["path"]) for item in ordered]
+        for url in carousel_urls:
+        if not wait_for_url(url):
+            raise RuntimeError(f"Carousel image URL not available: {url}")
 
     caption = build_rankings_caption(ordered)
 
@@ -1367,6 +1473,10 @@ def post_rankings_from_manifest():
     for item in ordered:
         print(f"--- Posting story {item['team']} ---")
         story_url = github_raw_url(item["story_path"])
+    
+        if not wait_for_url(story_url):
+            raise RuntimeError(f"Story image URL not available: {story_url}")
+    
         fb_ok, ig_ok = post_story_to_meta(story_url)
         story_results.append((fb_ok, ig_ok))
 
