@@ -1460,10 +1460,11 @@ def post_rankings_from_manifest():
         print(f"  - {item['team']}")
 
     carousel_urls = [github_raw_url(item["path"]) for item in ordered]
-        for url in carousel_urls:
+
+    for url in carousel_urls:
         if not wait_for_url(url):
             raise RuntimeError(f"Carousel image URL not available: {url}")
-
+    
     caption = build_rankings_caption(ordered)
 
     carousel_fb_ok, carousel_ig_ok = post_carousel_to_meta(carousel_urls, caption=caption)
