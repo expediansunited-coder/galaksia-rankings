@@ -11,6 +11,7 @@ import json
 import sys
 import unicodedata
 import requests
+import random
 
 import pandas as pd
 
@@ -137,6 +138,157 @@ chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 # ============================================================
 # GENERIC HELPERS
 # ============================================================
+def ordinal(n):
+    try:
+        n = int(n)
+    except Exception:
+        return str(n)
+
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+
+    return f"{n}{suffix}"
+
+
+def get_galaksia_position(df):
+    for _, row in df.iterrows():
+        team_name = str(row.get("Team", ""))
+
+        if is_galaksia_team_name(team_name):
+            return row.get("Position", "")
+
+    return ""
+
+
+def build_rankings_caption(items):
+    standings_lines = []
+
+    team_labels = {
+        "11A": "A Team",
+        "11B": "B Team",
+        "11C": "C Team",
+    }
+
+    for item in items:
+        team = item.get("team", "")
+        pos = item.get("position", "")
+
+        if pos == "":
+            continue
+
+        league = item.get("league", "").strip()
+
+        if league:
+            standings_lines.append(f"{team_labels.get(team, team)} — {ordinal(pos)} in {league}")
+        else:
+            standings_lines.append(f"{team_labels.get(team, team)} — {ordinal(pos)}")
+
+    standings_block = "\n".join(standings_lines)
+
+    teams_present = {item.get("team") for item in items}
+
+    partner_lines = []
+
+    if "11A" in teams_present:
+        partner_lines.append("A Team partner: @movetoprague")
+
+    if "11B" in teams_present:
+        partner_lines.append("B Team partner: @coconutculture.eu")
+
+    partners_block = ""
+    if partner_lines:
+        partners_block = "\n\n" + "\n".join(partner_lines)
+
+    hashtags = (
+        "#GalaksiaPraha23 #GalaksiaFootball #PragueFootball "
+        "#LeagueStandings #WinAsOneTeam #PFS #PIBFAL"
+    )
+
+    templates = [
+        (
+            "League standings update ⚫️⚪️🟢\n\n"
+            "Here is where our teams currently stand:\n\n"
+            "{standings}\n\n"
+            "The season keeps moving, and every match is another opportunity to grow, compete, "
+            "and push for more points. Step by step, round by round, we keep working together.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "Current league positions 📊⚽️ ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "Plenty still to play for. Every training session, every match, and every point matters. "
+            "We keep building momentum and representing the club with pride.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "Standings check ⚽️📈 ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "The tables are only one part of the journey. The focus stays the same: work hard, "
+            "support each other, and keep improving as a club.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "League table snapshot 📸⚽️ ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "Another week, another look at the standings. The fight continues, the work continues, "
+            "and the ambition remains the same.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "Our teams in the current league picture ⚽️📊 ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "Every team has its own path through the season, but the goal is shared: compete, improve, "
+            "and move forward together.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "Latest standings update ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "The season is still being written. We keep pushing, we keep learning, and we keep fighting "
+            "for every point on the pitch.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "League progress report 📋⚽️ ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "Results, rankings, and performances all matter — but so does the work behind them. "
+            "We continue with commitment, discipline, and team spirit.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+
+        (
+            "Standings after the latest round 📊⚽️ ⚫️⚪️🟢\n\n"
+            "{standings}\n\n"
+            "There is still a long way to go, and every round brings a new challenge. We stay focused, "
+            "stay united, and keep moving forward.\n\n"
+            "Win as One Team.{partners}\n\n"
+            "{hashtags}"
+        ),
+    ]
+
+    template = random.choice(templates)
+
+    return template.format(
+        standings=standings_block,
+        partners=partners_block,
+        hashtags=hashtags,
+    )
+
 def get_background_path_for_ranking(cfg, team_count):
     """
     Uses team-specific background if available:
@@ -342,6 +494,18 @@ def galaksia_has_played(df):
 # ============================================================
 # DRIVE HELPERS
 # ============================================================
+def get_league_display(cfg):
+    source = cfg.get("source", "")
+    league_label = str(cfg.get("league_label", "")).strip()
+
+    if source == "fotbalpraha":
+        return f"PFS {league_label}".strip()
+
+    if source == "pibfal":
+        return f"PIBFAL {league_label}".strip()
+
+    return league_label
+
 def get_drive_service():
     scope = ["https://www.googleapis.com/auth/drive.readonly"]
     creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scope)
@@ -1140,6 +1304,8 @@ def run_ranking_image_generator():
 
             generated.append({
                 "team": cfg["team"],
+                "position": get_galaksia_position(df),
+                "league": get_league_display(cfg),
                 "path": out_path,
                 "story_path": story_path,
             })
@@ -1192,7 +1358,7 @@ def post_rankings_from_manifest():
 
     carousel_urls = [github_raw_url(item["path"]) for item in ordered]
 
-    caption = "League Standings"
+    caption = build_rankings_caption(ordered)
 
     carousel_fb_ok, carousel_ig_ok = post_carousel_to_meta(carousel_urls, caption=caption)
 
