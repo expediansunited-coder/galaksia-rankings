@@ -3,80 +3,80 @@
     "rows": [
       {
         "Position": "1",
-        "Team": "Bohemians Praha 1905 C",
+        "Team": "TJ Sokol Běchovice",
+        "Matches Played": "6",
+        "Wins": "6",
+        "Draws": "0",
+        "Losses": "0",
+        "Score": "31:7",
+        "Diff": "+24",
+        "Points": "18"
+      },
+      {
+        "Position": "2",
+        "Team": "Galaksia Praha 23",
         "Matches Played": "6",
         "Wins": "5",
         "Draws": "0",
         "Losses": "1",
-        "Score": "32:12",
-        "Diff": "+20",
-        "Points": "15"
-      },
-      {
-        "Position": "2",
-        "Team": "TJ Sokol Běchovice",
-        "Matches Played": "5",
-        "Wins": "5",
-        "Draws": "0",
-        "Losses": "0",
-        "Score": "26:7",
-        "Diff": "+19",
+        "Score": "36:6",
+        "Diff": "+30",
         "Points": "15"
       },
       {
         "Position": "3",
-        "Team": "Galaksia Praha 23",
-        "Matches Played": "5",
-        "Wins": "4",
+        "Team": "Bohemians Praha 1905 C",
+        "Matches Played": "7",
+        "Wins": "5",
         "Draws": "0",
-        "Losses": "1",
-        "Score": "33:6",
-        "Diff": "+27",
-        "Points": "12"
+        "Losses": "2",
+        "Score": "33:16",
+        "Diff": "+17",
+        "Points": "15"
       },
       {
         "Position": "4",
         "Team": "SK Újezd Praha 4 C",
-        "Matches Played": "6",
-        "Wins": "4",
+        "Matches Played": "7",
+        "Wins": "5",
         "Draws": "0",
         "Losses": "2",
-        "Score": "28:12",
-        "Diff": "+16",
-        "Points": "12"
+        "Score": "33:16",
+        "Diff": "+17",
+        "Points": "15"
       },
       {
         "Position": "5",
         "Team": "FK VINOŘ 1928",
-        "Matches Played": "6",
+        "Matches Played": "7",
         "Wins": "3",
         "Draws": "0",
-        "Losses": "3",
-        "Score": "26:15",
-        "Diff": "+11",
+        "Losses": "4",
+        "Score": "26:18",
+        "Diff": "+8",
         "Points": "9"
       },
       {
         "Position": "6",
         "Team": "TJ Sokol Královice B",
-        "Matches Played": "5",
-        "Wins": "2",
+        "Matches Played": "6",
+        "Wins": "3",
         "Draws": "0",
         "Losses": "3",
-        "Score": "16:18",
-        "Diff": "-2",
-        "Points": "6"
+        "Score": "20:19",
+        "Diff": "+1",
+        "Points": "9"
       },
       {
         "Position": "7",
         "Team": "FK Union Žižkov",
-        "Matches Played": "5",
+        "Matches Played": "6",
         "Wins": "2",
-        "Draws": "0",
+        "Draws": "1",
         "Losses": "3",
         "Score": "9:14",
         "Diff": "-5",
-        "Points": "6"
+        "Points": "7"
       },
       {
         "Position": "8",
@@ -92,169 +92,202 @@
       {
         "Position": "9",
         "Team": "FK Horní Měcholupy 1932",
-        "Matches Played": "6",
+        "Matches Played": "7",
         "Wins": "2",
         "Draws": "0",
-        "Losses": "4",
-        "Score": "13:30",
-        "Diff": "-17",
+        "Losses": "5",
+        "Score": "13:35",
+        "Diff": "-22",
         "Points": "6"
       },
       {
         "Position": "10",
         "Team": "Spartak Hrdlořezy B",
-        "Matches Played": "5",
+        "Matches Played": "6",
         "Wins": "0",
-        "Draws": "1",
+        "Draws": "2",
         "Losses": "4",
         "Score": "3:24",
         "Diff": "-21",
-        "Points": "1"
+        "Points": "2"
       },
       {
         "Position": "11",
         "Team": "A.F.K. Olympia Šeberov",
-        "Matches Played": "5",
+        "Matches Played": "6",
         "Wins": "0",
         "Draws": "1",
-        "Losses": "4",
-        "Score": "6:42",
-        "Diff": "-36",
+        "Losses": "5",
+        "Score": "10:47",
+        "Diff": "-37",
         "Points": "1"
       }
     ],
-    "updated_at": "2026-10-14 12:01:56"
+    "updated_at": "2026-10-21 11:59:00"
   },
   "11B": {
     "rows": [
       {
         "Position": "1",
         "Team": "Ambassadors FC Praha",
-        "Matches Played": "6",
-        "Wins": "5",
+        "Matches Played": "7",
+        "Wins": "6",
         "Draws": "0",
         "Losses": "1",
-        "Score": "33:6",
-        "Diff": "+27",
-        "Points": "15"
+        "Score": "41:6",
+        "Diff": "+35",
+        "Points": "18"
       },
       {
         "Position": "2",
-        "Team": "TJ Slovan Bohnice - Praha 8 B",
-        "Matches Played": "6",
-        "Wins": "5",
+        "Team": "SK Horní Měcholupy B",
+        "Matches Played": "7",
+        "Wins": "6",
         "Draws": "0",
         "Losses": "1",
-        "Score": "26:5",
-        "Diff": "+21",
-        "Points": "15"
+        "Score": "30:17",
+        "Diff": "+13",
+        "Points": "18"
       },
       {
         "Position": "3",
-        "Team": "SK Horní Měcholupy B",
-        "Matches Played": "6",
+        "Team": "Sparta Krč 1910",
+        "Matches Played": "7",
         "Wins": "5",
-        "Draws": "0",
+        "Draws": "1",
         "Losses": "1",
-        "Score": "26:14",
-        "Diff": "+12",
-        "Points": "15"
+        "Score": "26:8",
+        "Diff": "+18",
+        "Points": "16"
       },
       {
         "Position": "4",
-        "Team": "Sparta Krč 1910",
-        "Matches Played": "6",
-        "Wins": "4",
-        "Draws": "1",
-        "Losses": "1",
-        "Score": "22:8",
-        "Diff": "+14",
-        "Points": "13"
+        "Team": "TJ Slovan Bohnice - Praha 8 B",
+        "Matches Played": "7",
+        "Wins": "5",
+        "Draws": "0",
+        "Losses": "2",
+        "Score": "26:9",
+        "Diff": "+17",
+        "Points": "15"
       },
       {
         "Position": "5",
         "Team": "TJ Sokol Lipence B",
-        "Matches Played": "6",
-        "Wins": "2",
+        "Matches Played": "7",
+        "Wins": "3",
         "Draws": "2",
         "Losses": "2",
-        "Score": "12:13",
-        "Diff": "-1",
-        "Points": "8"
+        "Score": "15:13",
+        "Diff": "+2",
+        "Points": "11"
       },
       {
         "Position": "6",
         "Team": "Galaksia Praha 23 B",
-        "Matches Played": "6",
+        "Matches Played": "7",
         "Wins": "2",
         "Draws": "1",
-        "Losses": "3",
-        "Score": "12:12",
-        "Diff": "0",
+        "Losses": "4",
+        "Score": "15:16",
+        "Diff": "-1",
         "Points": "7"
       },
       {
         "Position": "7",
         "Team": "PARTISAN PRAGUE F.C. B",
-        "Matches Played": "6",
+        "Matches Played": "7",
         "Wins": "2",
         "Draws": "0",
-        "Losses": "4",
-        "Score": "16:14",
-        "Diff": "+2",
+        "Losses": "5",
+        "Score": "16:22",
+        "Diff": "-6",
         "Points": "6"
       },
       {
         "Position": "8",
-        "Team": "SK Uhelné sklady Praha B",
-        "Matches Played": "6",
+        "Team": "FC INTERNATIONAL PRAHA",
+        "Matches Played": "7",
         "Wins": "2",
         "Draws": "0",
-        "Losses": "4",
-        "Score": "12:27",
-        "Diff": "-15",
+        "Losses": "5",
+        "Score": "17:28",
+        "Diff": "-11",
         "Points": "6"
       },
       {
         "Position": "9",
-        "Team": "FC INTERNATIONAL PRAHA",
-        "Matches Played": "6",
-        "Wins": "1",
+        "Team": "SK Uhelné sklady Praha B",
+        "Matches Played": "7",
+        "Wins": "2",
         "Draws": "0",
         "Losses": "5",
-        "Score": "8:25",
-        "Diff": "-17",
-        "Points": "3"
+        "Score": "15:36",
+        "Diff": "-21",
+        "Points": "6"
       },
       {
         "Position": "10",
         "Team": "TJ SOKOL PÍSNICE B",
-        "Matches Played": "6",
+        "Matches Played": "7",
         "Wins": "0",
         "Draws": "0",
-        "Losses": "6",
-        "Score": "5:48",
-        "Diff": "-43",
+        "Losses": "7",
+        "Score": "5:51",
+        "Diff": "-46",
         "Points": "0"
       }
     ],
-    "updated_at": "2026-10-14 12:02:01"
+    "updated_at": "2026-10-21 11:59:05"
   },
   "11C": {
     "rows": [
       {
         "Position": "1",
         "Team": "Prague United",
-        "Matches Played": "3",
+        "Matches Played": "4",
         "Wins": "3",
         "Draws": "0",
-        "Losses": "0",
-        "Score": "27:2",
-        "Diff": "25",
+        "Losses": "1",
+        "Score": "27:3",
+        "Diff": "24",
         "Points": "9"
       },
       {
         "Position": "2",
+        "Team": "Galaksia Praha 23 C",
+        "Matches Played": "3",
+        "Wins": "2",
+        "Draws": "0",
+        "Losses": "1",
+        "Score": "10:4",
+        "Diff": "6",
+        "Points": "6"
+      },
+      {
+        "Position": "3",
+        "Team": "Letná FG",
+        "Matches Played": "2",
+        "Wins": "2",
+        "Draws": "0",
+        "Losses": "0",
+        "Score": "10:5",
+        "Diff": "5",
+        "Points": "6"
+      },
+      {
+        "Position": "4",
+        "Team": "Prague Devils",
+        "Matches Played": "4",
+        "Wins": "2",
+        "Draws": "0",
+        "Losses": "2",
+        "Score": "13:11",
+        "Diff": "2",
+        "Points": "6"
+      },
+      {
+        "Position": "5",
         "Team": "AAU Football Club",
         "Matches Played": "4",
         "Wins": "2",
@@ -263,39 +296,6 @@
         "Score": "8:16",
         "Diff": "-8",
         "Points": "6"
-      },
-      {
-        "Position": "3",
-        "Team": "Galaksia Praha 23 C",
-        "Matches Played": "1",
-        "Wins": "1",
-        "Draws": "0",
-        "Losses": "0",
-        "Score": "8:0",
-        "Diff": "8",
-        "Points": "3"
-      },
-      {
-        "Position": "4",
-        "Team": "Letná FG",
-        "Matches Played": "1",
-        "Wins": "1",
-        "Draws": "0",
-        "Losses": "0",
-        "Score": "6:3",
-        "Diff": "3",
-        "Points": "3"
-      },
-      {
-        "Position": "5",
-        "Team": "Prague Devils",
-        "Matches Played": "2",
-        "Wins": "1",
-        "Draws": "0",
-        "Losses": "1",
-        "Score": "7:6",
-        "Diff": "1",
-        "Points": "3"
       },
       {
         "Position": "6",
@@ -309,6 +309,6 @@
         "Points": "0"
       }
     ],
-    "updated_at": "2026-10-14 12:02:11"
+    "updated_at": "2026-10-21 11:59:14"
   }
 }
